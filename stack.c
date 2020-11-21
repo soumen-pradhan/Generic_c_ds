@@ -3,29 +3,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define formatSpecifier(x) _Generic( (x), \
-    char: "%c", \
-    signed char: "%hhd", \
-    unsigned char: "%hhu", \
-    signed short: "%hd", \
-    unsigned short: "%hu", \
-    signed int: "%d", \
-    unsigned int: "%u", \
-    long int: "%ld", \
-    unsigned long int: "%lu", \
-    long long int: "%lld", \
-    unsigned long long int: "%llu", \
-    float: "%f", \
-    double: "%f", \
-    long double: "%Lf", \
-    char *: "%s", \
-    void *: "%p" )
-#define print(x) printf(formatSpecifier(x), x), putchar(' ')
-#define println(x) printf(formatSpecifier(x), x), putchar('\n')
+// #define formatSpecifier(x) _Generic( (x), \
+//     char: "%c", \
+//     signed char: "%hhd", \
+//     unsigned char: "%hhu", \
+//     signed short: "%hd", \
+//     unsigned short: "%hu", \
+//     signed int: "%d", \
+//     unsigned int: "%u", \
+//     long int: "%ld", \
+//     unsigned long int: "%lu", \
+//     long long int: "%lld", \
+//     unsigned long long int: "%llu", \
+//     float: "%f", \
+//     double: "%f", \
+//     long double: "%Lf", \
+//     char *: "%s", \
+//     void *: "%p" )
+// #define print(x) printf(formatSpecifier(x), x), putchar(' ')
+// #define println(x) printf(formatSpecifier(x), x), putchar('\n')
 
-#define SWAP(type, x, y) { type __t = x; x = y; y = __t; }
-#define LESSER(x, y) ( (x<y) ? (1) : (0) )
-#define EQUAL(x, y) ( (x==y) ? (1) : (0) )
+// #define SWAP(type, x, y) { type __t = x; x = y; y = __t; }
+// #define LESSER(x, y) ( (x<y) ? (1) : (0) )
+// #define EQUAL(x, y) ( (x==y) ? (1) : (0) )
 
 void print_array(int a[], int n) {
     for (int i = 0; i < n; ++i)
