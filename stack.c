@@ -27,11 +27,11 @@
 // #define LESSER(x, y) ( (x<y) ? (1) : (0) )
 // #define EQUAL(x, y) ( (x==y) ? (1) : (0) )
 
-void print_array(int a[], int n) {
-    for (int i = 0; i < n; ++i)
-        print(a[i]);
-    putchar('\n');
-}
+// void print_array(int a[], int n) {
+//     for (int i = 0; i < n; ++i)
+//         print(a[i]);
+//     putchar('\n');
+// }
 
 // Generic Stack
 
@@ -45,28 +45,31 @@ typedef struct _baseStack {
     struct {\
         type *elements;\
         int size;\
-        int capacity\
+        int capacity;\
     } *
 
-BaseStack *init_stack(size_t elementSize) {
+void *init_stack(size_t elementSize) {
     BaseStack *stack = malloc( sizeof(BaseStack) );
     stack->elements = malloc(elementSize);
     stack->size = 0;
     stack->capacity = 1;
-    return stack;
+    void *res = stack;
+    return res;
 }
 
-void stack_resize(BaseStack *stack, size_t newSize) {
-    stack->elements = realloc(stack->elements, newSize);
-    stack->capacity = newSize;
+void stack_resize(void *stack, size_t newSize) {
+    BaseStack* bStack = (BaseStack *)(stack);
+    bStack->elements = realloc(bStack->elements, newSize);
+    bStack->capacity = newSize;
 }
 
-void free_stack(BaseStack *stack) {
-    free(stack->elements);
-    free(stack);
+void free_stack(void *stack) {
+    BaseStack* bStack = (BaseStack *)(stack);
+    free(bStack->elements);
+    free(bStack);
 }
 
-#define newStack(type) ( Stack(type) ) init_stack(sizeof(type))
+#define newStack(type) init_stack(sizeof(type))
 
 #define StackPush(stack, data) \
     if (stack->size + 1 >= stack->capacity) {\
