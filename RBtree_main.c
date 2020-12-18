@@ -1,5 +1,6 @@
 #include "RBtree.h"
 #include <time.h>
+#include <stdio.h>
 
 // Comparator and printing function to be supplied by user (Here, int)
 // These functions determine the type to be used in Tree
@@ -34,7 +35,7 @@ int main(int argc, char const *argv[]) {
         RBtree_insert(T, a);
     }
     printTree(T, T->root, 0);
-    puts("Delete left of Root");
+    puts("\nDelete left of Root");
     RBtree_delete(T, T->root->left);
     printTree(T, T->root, 0);
     RBtree_free(T);
