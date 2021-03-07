@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "RBtree.h"
 #include "Stack.h"
@@ -8,14 +9,14 @@
 // Comparator and printing function to be supplied by user (Here, int)
 // These functions determine the type to be used in Tree
 
-bool int_less(void *a, void *b) { return *((int *)a) < *((int *)b); }
-bool int_equal(void *a, void *b) { return *((int *)a) == *((int *)b); }
+bool intLess(void *a, void *b) { return *((int *)a) < *((int *)b); }
+bool intEqual(void *a, void *b) { return *((int *)a) == *((int *)b); }
 
-void printTree(RBtree *T, RBnode *node, int depth) {
+void printIntTree(RBtree *T, RBnode *node, int depth) {
     if (node == T->nil)
         return;
 
-    printTree(T, node->right, depth+1);
+    printIntTree(T, node->right, depth+1);
 
     for (int i = 0; i < depth-1; i++) printf("     ");
     int key = *((int *)node->key);
@@ -25,10 +26,10 @@ void printTree(RBtree *T, RBnode *node, int depth) {
     else printf(".---%d", key);
     printf("\n");
 
-    printTree(T, node->left, depth+1);
+    printIntTree(T, node->left, depth+1);
 }
 
-void print_vec(Vector *vec) {
+void printIntVec(Vector *vec) {
     int *a = (int *)vec->elem;
     for (int i = 0; i < vec->size; i++) {
         printf("%d ", a[i]);
@@ -38,16 +39,52 @@ void print_vec(Vector *vec) {
 
 int main(int argc, char const *argv[])
 {
-    Vector *vec = Vector_init(int);
-    int a[3] = {3, 1, 2};
-    for (int i = 0; i < atoi(argv[1]); i++) {
-        Vector_push(vec, a[i%3]);
-        printf("%d, %ld\n", i, vec->cap);
+    int val[5];
+    for (int i = 0; i < 5; i++) {
+        val[i] = rand() % 500;
     }
-    print_vec(vec);
-    int v;
-    Vector_access(vec, 5, v);
-    printf("%d\n", v);
-    Vector_free(vec);
+
+    long int elem = argc > 1 ? strtol(argv[1], NULL, 10) : 20;
+
+    {
+        puts("RBtree");
+        RBtree *tr = RBtree_init(intLess, intEqual);
+        for (int i = 0; i < elem; i++) {
+            RBtree_insert(tr, val[i%5]);
+        }
+        printIntTree(tr, tr->root, 0);
+        RBtree_free(tr);
+    }
+    {
+        puts("Stack");
+        Stack *stk = Stack_init(int);
+        for (int i = 0; i < elem; i++) {
+            Stack_push(stk, val[i%5]);
+        }
+        int t;
+        for (int i = 0; i < elem; i++) {
+            Stack_pop(stk, t);
+            printf("%d ", t);
+        }
+        putchar('\n');
+        Stack_free(stk);
+    }
+    {
+        puts("Vector");
+        Vector *vec = Vector_init(int);
+        for (int i = 0; i < elem; i++) {
+            Vector_push(vec, val[i%5]);
+        }
+        printIntVec(vec);
+        Vector *vec2 = Vector_init(int);
+        for (int i = 0; i < elem; i++) {
+            Vector_push(vec2, val[i%5]);
+        }
+        Vector_push_vector(vec, vec2);
+        printIntVec(vec);
+        Vector_free(vec);
+        Vector_free(vec2);
+    }
+    
 }
 

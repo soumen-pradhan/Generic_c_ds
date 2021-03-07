@@ -62,7 +62,6 @@ void Vector_pop_(Vector *vector, void *var) {
     }
 }
 
-
 void Vector_back_(Vector *vector, void *var) {
     if (vector->size == 0) {
         fprintf(stderr, "%s:\n%d:'%s': Vector Empty\n", __FILE__, __LINE__, __func__);

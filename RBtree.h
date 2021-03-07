@@ -1,12 +1,9 @@
 #ifndef RBTREE_H
 #define RBTREE_H
 
-#include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 
 typedef enum _COLOR { RED = 0, BLACK } COLOR;
-// For generic types
 typedef bool (*Comparator)(void *, void *);
 
 // Nodes in the tree
