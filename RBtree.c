@@ -48,19 +48,23 @@ void RBtree_free(RBtree *T) {
 
 RBnode *RBtree_search(RBtree *T, RBnode *node, void *val) {
     while (node != T->nil && T->equal(node->key, val)) {
-        if (T->comp(val, node->key)) node = node->left;
-        else node = node->right;
+        if (T->comp(val, node->key))
+            node = node->left;
+        else
+            node = node->right;
     }
     return node;
 }
 
 RBnode *RBtree_minimum(RBtree *T, RBnode *node) {
-    while (node->left != T->nil) node = node->left;
+    while (node->left != T->nil)
+        node = node->left;
     return node;
 }
 
 RBnode *RBtree_maximum(RBtree *T, RBnode *node) {
-    while (node->right != T->nil) node = node->right;
+    while (node->right != T->nil)
+        node = node->right;
     return node;
 }
 

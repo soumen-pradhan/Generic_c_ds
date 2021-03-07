@@ -1,6 +1,9 @@
-#include "RBtree.h"
-#include <time.h>
 #include <stdio.h>
+#include <stdbool.h>
+
+#include "RBtree.h"
+#include "Stack.h"
+#include "Vector.h"
 
 // Comparator and printing function to be supplied by user (Here, int)
 // These functions determine the type to be used in Tree
@@ -25,18 +28,26 @@ void printTree(RBtree *T, RBnode *node, int depth) {
     printTree(T, node->left, depth+1);
 }
 
-int main(int argc, char const *argv[]) {
-    RBtree *T = RBtree_init(int_less, int_equal);
-
-    srand(time(NULL));
-    printTree(T, T->root, 0);
-    for (int i = 0; i < 13; i++) {
-        int a = rand()%100; // Only a variable can be used to insert. Do not use a pointer or literal.
-        RBtree_insert(T, a);
+void print_vec(Vector *vec) {
+    int *a = (int *)vec->elem;
+    for (int i = 0; i < vec->size; i++) {
+        printf("%d ", a[i]);
     }
-    printTree(T, T->root, 0);
-    puts("\nDelete left of Root");
-    RBtree_delete(T, T->root->left);
-    printTree(T, T->root, 0);
-    RBtree_free(T);
+    putchar('\n');
 }
+
+int main(int argc, char const *argv[])
+{
+    Vector *vec = Vector_init(int);
+    int a[3] = {3, 1, 2};
+    for (int i = 0; i < atoi(argv[1]); i++) {
+        Vector_push(vec, a[i%3]);
+        printf("%d, %ld\n", i, vec->cap);
+    }
+    print_vec(vec);
+    int v;
+    Vector_access(vec, 5, v);
+    printf("%d\n", v);
+    Vector_free(vec);
+}
+

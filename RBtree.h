@@ -1,7 +1,6 @@
 #ifndef RBTREE_H
 #define RBTREE_H
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -25,8 +24,7 @@ void RBnode_free(RBnode *node);
 
 typedef struct RBtree {
     RBnode *root, *nil;
-    Comparator comp;
-    Comparator equal;
+    Comparator comp, equal;
 } RBtree;
 
 RBtree *RBtree_init(Comparator comp, Comparator equal);

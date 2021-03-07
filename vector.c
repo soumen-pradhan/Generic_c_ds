@@ -1,178 +1,105 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-// Interface for functions
+#include "Vector.h"
 
-typedef struct _baseVector {
-    void *_elements;
-    size_t _size;
-    size_t _capacity;
-} BaseVector;
+Vector *Vector_init_(size_t typeSize) {
+    Vector *vector = malloc(sizeof(Vector));
+    vector->elem = malloc(typeSize);
+    vector->size = 0;
+    vector->cap = 1;
+    vector->type = typeSize;
 
-#define Vector(type)\
-    struct {\
-        type *_elements;\
-        size_t _size;\
-        size_t _capacity;\
-    } *
-
-
-// Allocation functions
-
-void *_vector_init(size_t element_size) {
-    BaseVector *vector = malloc( sizeof(BaseVector) );
-    vector->_elements = malloc(element_size);
-    vector->_size = 0;
-    vector->_capacity = 1;
-
-    void *vec_return = vector;
-    return vec_return;
+    return vector;
 }
 
-void _vector_resize(void *vector, size_t new_size) {
-    BaseVector *bVector = vector;
-    bVector->_elements = realloc(bVector->_elements, new_size);
-    bVector->_capacity = new_size;
+void Vector_resize_(Vector *vector, size_t maxElem) {
+    vector->elem = realloc(vector->elem, maxElem*vector->type);
+    vector->cap = maxElem;
 }
 
-void _vector_free(void *vector) {
-    BaseVector *bVector = vector;
-    free(bVector->_elements);
-    free(bVector);
+void Vector_free(Vector *vector) {
+    free(vector->elem);
+    free(vector);
 }
 
-// Declare a Vector
-
-#define new_Vector(type) _vector_init( sizeof(type) )
-
-// Copy a vector contents to another. (Shallow Copy)
-
-#define Vector_copy(dest, src) \
-    do {\
-        _vector_resize(dest, src->_capacity*sizeof( *(dest->_elements) ) );\
-        memcpy( dest->_elements, src->_elements, src->_size*sizeof( *(dest->_elements) ) );\
-        dest->_size = src->_size;\
-    } while (false)
-
-// Push a value at the end
-
-#define Vector_push(vector, data) \
-    do {\
-        if (vector->_size + 1 >= vector->_capacity) {\
-            _vector_resize(vector, vector->_capacity*2);\
-        }\
-        vector->_elements[vector->_size] = data;\
-        vector->_size++;\
-    } while (false)
-
-// Push an entire vector at the end
-
-#define Vector_push_vector(vector, push_vector) \
-    do {\
-        size_t _prev_size = vector->_size;\
-        if (vector->_capacity <= push_vector->_size ) {\
-            _vector_resize(vector, (vector->_size + push_vector->_size)*2);\
-        }\
-        memcpy( vector->_elements+_prev_size, push_vector->_elements, push_vector->_size*sizeof( *(vector->_elements) ) );\
-        vector->_size += push_vector->_size;\
-    } while (false)
-
-// Remove and store the last element
-
-#define Vector_pop(vector, var) \
-    do {\
-        if (vector->_size == 0) {\
-            fprintf(stderr, "Stack Empty");\
-        }\
-        else {\
-            var = vector->_elements[ vector->_size-1 ];\
-            vector->_size--;\
-            if (vector->_size < vector->_capacity/2) {\
-                _vector_resize(vector, vector->_capacity/2);\
-            }\
-        }\
-    } while (false)
-
-// Store the last element
-
-#define Vector_back(vector, var) \
-    do {\
-        if (stack->size == 0) {\
-            fprintf(stderr, "Stack Empty\n");\
-        }\
-        else {\
-            var = vector->_elements[ vector->_size-1 ];\
-        }\
-    } while (false)
-
-// Random access at any index and store it
-
-#define Vector_access(vector, index, var) \
-    do {\
-        if (index < 0 || index >= vector->_size) {\
-            fprintf(stderr, "Index out of Bounds\n");\
-        }\
-        else {\
-            var = vector->_elements[index];\
-        }\
-    } while (false)
-
-// Remove any index and sift the elements up
-
-#define Vector_remove_index(vector, index) \
-    do {\
-        if (index < 0 || index >= vector->_size) {\
-            fprintf(stderr, "Index out of Bounds\n");\
-        }\
-        else {\
-            memcpy( vector->_elements+index, vector->_elements+index+1, (vector->_size - index - 1)*sizeof( *(vector->_elements) ) );\
-            vector->_size--;\
-            if (vector->_size < vector->_capacity/2) {\
-                _vector_resize(vector, vector->_capacity/2);\
-            }\
-        }\
-    } while (false)
-
-// Deallocate
-
-#define Vector_free(vector) _vector_free(vector)
-
-
-// Utility func. Has to be user defined.
-void print_vec(void *vec) {
-    BaseVector *v = vec;
-    char *arr = v->_elements;
-
-    for (int i = 0; i < v->_size; i++) printf("%c ", arr[i]);
-    putchar('\n');
+void Vector_copy(Vector *dest, Vector *src) {
+    Vector_resize_(dest, src->cap * src->type);
+    memcpy(dest->elem, src->elem, src->size * src->type);
+    dest->size = src->size;
 }
 
-int main(int argc, char const *argv[]) {
-    Vector(char) a = new_Vector(char);
+void Vector_push_(Vector *vector, void *data) {
+    if (vector->size + 1 >= vector->cap) {
+        Vector_resize_(vector, vector->cap*2);
+    }
+    memcpy(vector->elem + vector->type * vector->size, data, vector->type);
+    vector->size++;
+}
 
-    Vector_push(a, 'b');
-    Vector_push(a, 'o');
-    Vector_push(a, 'i');
-    Vector_push(a, 'i');
+void Vector_push_vector(Vector *vector, Vector *insert) {
+    size_t ogSize = vector->size;
+    if (vector->cap <= vector->size + insert->size) {
+        Vector_resize_(vector, (vector->size + insert->size) * 2);
+    }
 
-    print_vec(a);
+    memcpy(vector->elem + vector->type * ogSize, insert->elem, insert->size * insert->type);
+    vector->size += insert->size;
+}
 
-    Vector_remove_index(a, 0);
+void Vector_pop_(Vector *vector, void *var) {
+    if (vector->size == 0) {
+        fprintf(stderr, "%s:\n%d:'%s': Vector Empty\n", __FILE__, __LINE__, __func__);
+        return;
+    }
 
-    print_vec(a);
+    memcpy(var, vector->elem + vector->type * (vector->size - 1), vector->type);
+    vector->size--;
 
-    Vector(char) b = new_Vector(char);
-    Vector_push(b, 'g');
-    Vector_push(b, 'u');
-    Vector_push(b, 'r');
-    Vector_push(b, 'l');
-    Vector_copy(a, b);
+    if (vector->size < vector->cap/2) {
+        Vector_resize_(vector, vector->cap/2);
+    }
+}
 
-    Vector_push_vector(a, a);
-    print_vec(a);
 
-    Vector_free(a);
-    Vector_free(b);
+void Vector_back_(Vector *vector, void *var) {
+    if (vector->size == 0) {
+        fprintf(stderr, "%s:\n%d:'%s': Vector Empty\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+
+    memcpy(var, vector->elem + vector->type * (vector->size - 1), vector->type);
+}
+
+void Vector_access_(Vector *vector, size_t index, void *var) {
+    if (index < 0 || index >= vector->size) {
+        fprintf(stderr, "%s:\n%d:'%s': Index out of Bounds\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+
+    memcpy(var, vector->elem + vector->type * index, vector->type);
+}
+
+void Vector_insert_(Vector *vector, size_t index, void *var) {
+    if (index < 0 || index >= vector->size) {
+        fprintf(stderr, "%s:\n%d:'%s': Index out of Bounds\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+
+    memcpy(vector->elem + vector->type * index, var, vector->type);
+}
+
+void Vector_remove_index(Vector *vector, size_t index) {
+    if (index < 0 || index >= vector->size) {
+        fprintf(stderr, "%s:\n%d:'%s': Index out of Bounds\n", __FILE__, __LINE__, __func__);
+        return;
+    }
+
+    memcpy(vector->elem + index, vector->elem + index + 1, vector->type * (vector->size - index - 1));
+    vector->size--;
+
+    if (vector->size < vector->cap/2) {
+        Vector_resize_(vector, vector->cap/2);
+    }
 }
