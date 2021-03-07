@@ -27,4 +27,3 @@ void Stack_top_(Stack *stack, void *var);
 #define Stack_top(stack, var) Stack_top_(stack, &var)
 
 #endif
-

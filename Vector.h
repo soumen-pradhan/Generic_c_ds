@@ -43,5 +43,4 @@ void Vector_insert_(Vector *vector, size_t index, void *data);
 // Remove element and shift elements at left
 void Vector_remove_index(Vector *vector, size_t index);
 
-
 #endif
